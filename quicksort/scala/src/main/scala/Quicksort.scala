@@ -3,15 +3,32 @@
  */
 object Quicksort {
 
-  def leftList(list: List[Int], pivot: Int) = {
-    list.filter((x) => x <= pivot )
+  trait NumberLike[T] {
+    def <= (x:T, y:T) : Boolean
+    def > (x:T, y:T) : Boolean
   }
 
-  def rightList(list: List[Int], pivot: Int) = {
-    list.filter((x) => x > pivot)
+  object NumberLike {
+    implicit object NumberLikeDouble extends NumberLike[Double] {
+      override def <=(x: Double, y: Double): Boolean = x <= y
+      override def >(x: Double, y: Double): Boolean = x > y
+    }
+
+    implicit object NumberLikeInt extends NumberLike[Int] {
+      override def <=(x: Int, y: Int): Boolean = x <= y
+      override def >(x: Int, y: Int): Boolean = x > y
+    }
   }
 
-  def sort(list: List[Int]) : List[Int] = {
+  def leftList[T](list: List[T], pivot: T)(implicit ev:NumberLike[T]) = {
+    list.filter((x) => ev.<=(x, pivot))
+  }
+
+  def rightList[T](list: List[T], pivot: T)(implicit ev:NumberLike[T]) = {
+    list.filter((x) => ev.>(x, pivot))
+  }
+
+  def sort[T](list: List[T])(implicit ev:NumberLike[T]) : List[T] =
     list match {
       case Nil => Nil
       case _ :: Nil => list
@@ -20,5 +37,4 @@ object Quicksort {
         val right = rightList(tail, pivot)
         (sort(left) :+ pivot) ::: sort(right)
     }
-  }
 }

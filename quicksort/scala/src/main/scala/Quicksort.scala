@@ -3,32 +3,15 @@
  */
 object Quicksort {
 
-  trait NumberLike[T] {
-    def <= (x:T, y:T) : Boolean
-    def > (x:T, y:T) : Boolean
+  def leftList[T](list: List[T], pivot: T)(implicit ev:Ordering[T]) = {
+    list.filter((x) => ev.lteq(x, pivot))
   }
 
-  object NumberLike {
-    implicit object NumberLikeDouble extends NumberLike[Double] {
-      override def <=(x: Double, y: Double): Boolean = x <= y
-      override def >(x: Double, y: Double): Boolean = x > y
-    }
-
-    implicit object NumberLikeInt extends NumberLike[Int] {
-      override def <=(x: Int, y: Int): Boolean = x <= y
-      override def >(x: Int, y: Int): Boolean = x > y
-    }
+  def rightList[T](list: List[T], pivot: T)(implicit ev:Ordering[T]) = {
+    list.filter((x) => ev.gt(x, pivot))
   }
 
-  def leftList[T](list: List[T], pivot: T)(implicit ev:NumberLike[T]) = {
-    list.filter((x) => ev.<=(x, pivot))
-  }
-
-  def rightList[T](list: List[T], pivot: T)(implicit ev:NumberLike[T]) = {
-    list.filter((x) => ev.>(x, pivot))
-  }
-
-  def sort[T](list: List[T])(implicit ev:NumberLike[T]) : List[T] =
+  def sort[T](list: List[T])(implicit ev:Ordering[T]) : List[T] =
     list match {
       case Nil => Nil
       case _ :: Nil => list
